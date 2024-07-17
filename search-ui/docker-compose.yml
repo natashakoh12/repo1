@@ -1,0 +1,10 @@
+#define searchui container
+version: '3'
+services:
+  search-ui:
+    build: ./app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/usr/src/app
+
