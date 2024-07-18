@@ -7,15 +7,16 @@ from asr_api import asr
 # Define your ASR API endpoint
 ASR_API_URL = 'http://localhost:8001/asr' 
 app = Flask(__name__)
+#curl -F 'file=@C:/Users/HTX CBRNE/PycharmProjects/NAT/flask
 
 # Example route to handle GET requests
-@app.route('/asr', methods=['GET'])
-
+@app.route('/send_to_server', methods=['POST'])
 
 #Fn to iterate through each mp3 file in the folder and push it to ASR API
 def transcribe_audio_files(folder_path):
-    results = []
-    
+    csv_file = os.path.join(folder_path, 'cv-valid-dev.csv') #assume existing csv file in the designated folder
+    initialise_csv(csv_file)
+
     for filename in os.listdir(folder_path): #Iterate through each file in the folder
         if filename.endswith('.mp3'):
             file_path = os.path.join(folder_path, filename)
@@ -27,7 +28,6 @@ def transcribe_audio_files(folder_path):
                 print(response)
                 
                 if response.status_code == 200: #Check if the request was successful
-                    print(response.text)
      
                     try:
                         # Try to parse JSON response 
@@ -39,10 +39,13 @@ def transcribe_audio_files(folder_path):
                             transcription = results_from_asr_api[0]
                             print("transcription:", transcription)
                             '''
-                        generated = response.json()['text']
-                        transcription = generated['transcription']
-                        print(transcription)
-                        results.append({'filename': filename, 'generated_text': transcription})
+                        reply = requests.get(ASR_API_URL)
+                        print(reply)
+                        generated_text = reply.json()['transcription']
+                        duration = reply.json()['duration']
+                        results ={'generated_text': generated_text, 'duration': duration}
+                        append_csv(csv_file,results)
+                        print(results)
                     except (KeyError, ValueError) as e:
                         print(f"Error parsing JSON response for {filename}: {e}")
                 else:
@@ -53,28 +56,7 @@ def transcribe_audio_files(folder_path):
     
     return results
 
-def fetch_data_from_api(folder_path):
-    for filename in os.listdir(folder_path): #Iterate through each file in the folder
-        if filename.endswith('.mp3'):
-            file_path = os.path.join(folder_path, filename)
-            
-            files = {'file': open(file_path, 'rb')} #Prepare data to send to ASR API
-            
-            response = requests.post(ASR_API_URL, files=files) #Make POST request to ASR API
-            print(response)
-                
-            if response.status_code == 200: #Check if the request was successful
-                try:
-                    response = requests.get(ASR_API_URL)
-                    if response.status_code == 200:
-                        data = response.json()  # Parse JSON response into Python dictionary
-                        return data
-                    else:
-                        print(f"Error: {response.status_code} - {response.text}")
-                        return None
-                except requests.exceptions.RequestException as e:
-                    print(f"Request to API failed: {e}")
-                    return None
+
 
 # call above fn, update CVS file with results and save it back to folder
 def main():
@@ -83,13 +65,26 @@ def main():
     
     # Transcribe audio files
     results = (transcribe_audio_files(folder_path))
-    #results = fetch_data_from_api(folder_path)
     
-    # Update CSV file with generated_text column
-    csv_file = os.path.join(folder_path, 'cv-valid-dev.csv') #assume existing csv file in the designated folder
-    update_csv(csv_file, results)
     
     print("Transcription process completed.")
+
+def initialise_csv(csv_file):
+    file = open(csv_file, "w")
+    writer = csv.writer(file)
+    file.truncate()
+    writer.writerow(["generated_text","duration"])
+    file.close()
+
+def append_csv(csv_file, dict):
+    with open(csv_file, 'a',newline="") as file:  
+        writer = csv.writer(file)
+        text = dict['generated_text']
+        time = dict['duration']
+        print(text,time)
+        writer.writerow([text,time])
+    file.close()
+
 
 def update_csv(csv_file, results):
     # Read the existing CSV file and add generated_text column
@@ -106,12 +101,13 @@ def update_csv(csv_file, results):
                 break
     
     # Write updated rows back to the CSV file
-    with open(csv_file, 'w', newline='', encoding='utf-8') as file:
+    with open(csv_file, 'a', newline='', encoding='utf-8') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(rows)
+        for result in results:
+            writer.writerows(result)
 
 if __name__ == "__main__":
     main()
-    app.run(debug=True)
+    #app.run(debug=True) #to stop flask app from automatically starting again and wiped out my csv
 

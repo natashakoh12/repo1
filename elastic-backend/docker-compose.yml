@@ -16,7 +16,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
+      - esdata01:/usr/share/elasticsearch/data #persistent storage
     ports:
       - 9200:9200
       - 9300:9300
@@ -36,7 +36,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - esdata02:/usr/share/elasticsearch/data
+      - esdata02:/usr/share/elasticsearch/data #persistent storage
 
 volumes:
   esdata01:

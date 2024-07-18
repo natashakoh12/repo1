@@ -15,7 +15,7 @@ index_name = 'cv-transcriptions' #Define the index name
 
 if not es.indices.exists(index=index_name): #Create the index if it doesn't exist
     es.indices.create(index=index_name)
-#Fn to clean csv
+#Fn to clean csv to counter the syntax error faced
 def clean_data(row):
     #print("cleaning")
     cleaned_row = {}
@@ -48,6 +48,4 @@ csv_file = 'cv-valid-dev.csv'
 helpers.bulk(es, generate_documents(csv_file))
 
 print(f"Data indexed into Elasticsearch index '{index_name}' successfully.")
-
-#Execute the script to index the data into Elasticsearch
   

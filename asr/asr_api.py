@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from numpy import info
 from transformers import pipeline
 import os
 import tempfile
@@ -10,6 +11,15 @@ app = Flask(__name__) #create flask application
 
 #Initialize the ASR pipeline with wav2vec2-large-960h model
 asr_pipeline = pipeline(task="automatic-speech-recognition", model="facebook/wav2vec2-large-960h")
+
+
+global info #all fns within the script will be able to usee this variable
+
+#Fn to response to GET requests
+@app.route('/asr', methods=['GET'])
+def get_data():
+    global info
+    return json.dumps(info)
 
 #API endpoint to handle ASR requests
 @app.route('/asr', methods=['POST'])
@@ -29,17 +39,7 @@ def asr():
     try:
         #Perform ASR using the pipeline
         result = asr_pipeline(file_path)
-        '''
-        url = 'http://localhost:8001/asr'
-        data = {
-            'transcription': result,
-            'additional_info': 'any_additional_data_you_want_to_send'
-        }
 
-        response = requests.post(url, json=data)
-
-        print(response.json())
-        '''
         transcription = result['text']
         
         
@@ -50,6 +50,8 @@ def asr():
             "transcription": transcription,
             "duration": duration
             }
+        global info
+        info = response
         print(response)
         return transcription
     

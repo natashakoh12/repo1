@@ -8,7 +8,8 @@ torchaudio 0.13.1
 ffmpeg version 2024-07-10-git-1a86a7a48d-full_build-www.gyan.dev
 MSYS2's MinGW64's GCC 13.2.0
 Docker
-elasticsearch
+elasticsearch 7.17.0
+pandas 2.2.0
 
 
 

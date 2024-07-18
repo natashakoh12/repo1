@@ -1,4 +1,4 @@
-#define searchui container
+#define search-ui container
 version: '3'
 services:
   search-ui:
