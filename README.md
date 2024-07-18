@@ -21,14 +21,14 @@ The project involves building a comprehensive pipeline to process and analyze a 
 		- cv-valid-dev.csv
 	- deployment_design/
 		- design.pdf
-	-elastic-backend/
+	- elastic-backend/
 		- cv-index.py
 		- docker-compose.yml
-	-search-ui/
+	- search-ui/
 		- app/
 			- src/
-				-App.css
-				-App.js
+				- App.css
+				- App.js
 			- Dockerfile
 			- package
 		- docker-compose.yml
