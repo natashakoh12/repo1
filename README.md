@@ -23,6 +23,7 @@ The project involves building a comprehensive pipeline to process and analyze a 
 		- design.pdf
 	- elastic-backend/
 		- cv-index.py
+		- cv-valid-dev.csv
 		- docker-compose.yml
 	- search-ui/
 		- app/
@@ -32,10 +33,10 @@ The project involves building a comprehensive pipeline to process and analyze a 
 			- Dockerfile
 			- package
 		- docker-compose.yml
-	-essay.pdf
-	-.gitignore
-	-README.txt
-	-requirements.txt
+	- essay.pdf
+	- .gitignore
+	- README.txt
+	- requirements.txt
 
 2) Install all libraries and packages listed in the requirements.txt
 3) (optional) To put them into your system PATH environment variable as required to ensure access from any directory in command prompt
